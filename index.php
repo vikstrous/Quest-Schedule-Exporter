@@ -7,6 +7,7 @@
  * by Viktor Stanchev
  * 
  * This code is chaos and crap. Just a hack... just a hack...
+ * Why did I use "_uw_StripExtraSpace" instead of just string replace? This file is 300 lines too long.
  * 
  * Quest does this crazy thing where for some people it's in 24 hour format with the month and day switched in the
  * date field... Don't know why, but I search for AM or PM to determine if it's 12 hour time with mm/dd/yyyy or
