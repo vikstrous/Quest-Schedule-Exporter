@@ -125,7 +125,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       ([MThWF]{0,6})\s+
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
-      ([\w\ \-,\n]+)\s+
+      ([\w\ \-\,\r\n]+)\s+
       (\d{2}\/\d{2}\/\d{4})\ -\ 
       (\d{2}\/\d{2}\/\d{4})
     )
@@ -134,7 +134,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       ([MThWF]{0,6})\s+
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
-      ([\w\ \-,\n]+)\s+
+      ([\w\ \-\,\r\n]+)\s+
       (\d{2}\/\d{2}\/\d{4})\ -\ 
       (\d{2}\/\d{2}\/\d{4})
     )/x';
@@ -239,8 +239,9 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $result['days'] = $formatted_days;
         }
         //escape commas
-        $result['description'] = str_replace(',', '\,', $result['description']);
-        $result['summary'] = str_replace(',', '\,', $result['summary']);
+        //see rfc2445 section 4.1
+        $result['description'] = str_replace("\r\n", "\r\n ", str_replace(',', '\,', $result['description']));
+        $result['summary'] = str_replace("\r\n", "\r\n ", str_replace(',', '\,', $result['summary']));
         
         //add this class to the list
         $ical_array[] = $result;
