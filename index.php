@@ -51,14 +51,24 @@ $placeholders = array(
     '@prof',
 );
 
-//edit a day string by switching the month and the day
-function normalize_time($time_string, $ampm){
+// needs to return DD/MM/YYYY
+function normalize_date($time_string, $ampm){
   if(!$ampm){
     $arr = explode('/', $time_string);
-    $tmp = $arr[1];
-    $arr[1] = $arr[0];
-    $arr[0] = $tmp;
-    return implode('/', $arr);
+    // YYYY/MM/DD
+    if(count($arr[0]) == 4) {
+      $tmp = $arr[2];
+      $arr[2] = $arr[1];
+      $arr[1] = $arr[0];
+      $arr[0] = $tmp;
+      return implode('/', $arr);
+    } else {
+      // MM/DD/YYYY
+      $tmp = $arr[1];
+      $arr[1] = $arr[0];
+      $arr[0] = $tmp;
+      return implode('/', $arr);
+    }
   } else {
     return $time_string;
   }
@@ -126,8 +136,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
       ([\w\ \-\,\r\n]+)\s+
-      (\d{2}\/\d{2}\/\d{4})\ -\ 
-      (\d{2}\/\d{2}\/\d{4})
+      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
+      (\d{2,4}\/\d{2,4}\/\d{2,4})
     )
     |
     (
@@ -135,8 +145,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
       ([\w\ \-\,\r\n]+)\s+
-      (\d{2}\/\d{2}\/\d{4})\ -\ 
-      (\d{2}\/\d{2}\/\d{4})
+      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
+      (\d{2,4}\/\d{2,4}\/\d{2,4})
     )/x';
     
     
@@ -174,8 +184,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $location   = trim(_uw_StripExtraSpace($matches[10][0]));
           //$prof =substr(strrchr(' '.trim($matches[11][0]), ' '),1);//get only the last name
           $prof       = trim($matches[11][0]);
-          $date_start = strtotime(normalize_time($matches[12][0], $ampm));
-          $date_end   = strtotime(normalize_time($matches[13][0], $ampm));
+          $date_start = strtotime(normalize_date($matches[12][0], $ampm));
+          $date_end   = strtotime(normalize_date($matches[13][0], $ampm));
           
           break;
           
@@ -189,8 +199,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $location   = trim(_uw_StripExtraSpace($matches[18][0]));
           //$prof=substr(strrchr(' '.trim($matches[17][0]), ' '),1);//get only the last name
           $prof       = trim($matches[19][0]);
-          $date_start = strtotime(normalize_time($matches[20][0], $ampm));
-          $date_end   = strtotime(normalize_time($matches[21][0], $ampm));
+          $date_start = strtotime(normalize_date($matches[20][0], $ampm));
+          $date_end   = strtotime(normalize_date($matches[21][0], $ampm));
           
           break;
       }
