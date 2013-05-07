@@ -210,7 +210,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
     } else $pos=-1; //this exits the while because we are done if we can't find anything we're looking for
     
     //add to the array if we have all the info.
-    if($found_what_we_need){
+    if($found_what_we_need && $days != ''){
       
       if($format == 'icalendar'){
         //format the days of the week
