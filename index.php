@@ -129,13 +129,13 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
     )
     |
     (
-      \d{4}\s+
-      (\d{3})\s+
-      (\w{3})\s+
-      ([MThWF]{0,6})\s+
+      \d{4}\s+                                      #class number
+      (\d{3})\s+                                    #section
+      (\w{3})\s+                                    #component
+      ([MThWF]{0,6})\s+                             #days and times
       '.$time.'
-      ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
-      ([\w\ \-\,\r\n]+)\s+
+      ([\w\ ]+\s+[0-9]{1,5}[A-Z]?|TBA)\s+           #room
+      ([\w\ \-\,\r\n]+)\s+                          #instructor
       (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
       (\d{2,4}\/\d{2,4}\/\d{2,4})
     )
@@ -143,7 +143,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
     (
       ([MThWF]{0,6})\s+
       '.$time.'
-      ([\w\ ]+\s+[0-9]{1,5}[A-Z]?)\s+
+      ([\w\ ]+\s+[0-9]{1,5}[A-Z]?|TBA)\s+
       ([\w\ \-\,\r\n]+)\s+
       (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
       (\d{2,4}\/\d{2,4}\/\d{2,4})
