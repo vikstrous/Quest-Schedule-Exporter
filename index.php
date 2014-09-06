@@ -52,8 +52,8 @@ $placeholders = array(
 );
 
 // needs to return DD/MM/YYYY
-function normalize_date($time_string, $ampm){
-  if(!$ampm){
+function normalize_date($time_string, $swap){
+  if($swap){
     $arr = explode('/', $time_string);
     // YYYY/MM/DD
     if(count($arr[0]) == 4) {
@@ -102,7 +102,15 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
   $pos=0;
   //this is how long our quest schedule is
   $total_length=strlen($input);
-  
+    
+  //detect whether MM and DD needs to be swapped according to locale
+  //if en-CA, swap
+  //otherwise, no swap
+  $swap = false;
+  $locale = $_SERVER["HTTP_ACCEPT_LANGUAGE"];
+  if (strpos($locale, 'en-CA') !== FALSE){
+    $swap = true;
+  }
   //start the algorithm
   while ( $pos < $total_length && $pos >= 0) {
     //assume we didn't find anything
@@ -116,7 +124,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
     if(preg_match('/(AM)|(PM)/', $input)){
       $ampm = true;
     }
-    
+       
     $time = $ampm ?
        '([1]{0,1}\d\:[0-5]\d[AP]M)\ -\ 
         ([1]{0,1}\d\:[0-5]\d[AP]M)\s+'
@@ -184,8 +192,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $location   = trim(_uw_StripExtraSpace($matches[10][0]));
           //$prof =substr(strrchr(' '.trim($matches[11][0]), ' '),1);//get only the last name
           $prof       = trim($matches[11][0]);
-          $date_start = strtotime(normalize_date($matches[12][0], $ampm));
-          $date_end   = strtotime(normalize_date($matches[13][0], $ampm));
+          $date_start = strtotime(normalize_date($matches[12][0], $swap));
+          $date_end   = strtotime(normalize_date($matches[13][0], $swap));
           
           break;
           
@@ -199,8 +207,8 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $location   = trim(_uw_StripExtraSpace($matches[18][0]));
           //$prof=substr(strrchr(' '.trim($matches[17][0]), ' '),1);//get only the last name
           $prof       = trim($matches[19][0]);
-          $date_start = strtotime(normalize_date($matches[20][0], $ampm));
-          $date_end   = strtotime(normalize_date($matches[21][0], $ampm));
+          $date_start = strtotime(normalize_date($matches[20][0], $swap));
+          $date_end   = strtotime(normalize_date($matches[21][0], $swap));
           
           break;
       }
