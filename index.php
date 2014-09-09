@@ -56,11 +56,11 @@ function normalize_date($time_string, $swap){
   if($swap){
     $arr = explode('/', $time_string);
     // YYYY/MM/DD
-    if(count($arr[0]) == 4) {
+    if(strlen($arr[0]) == 4) {
       $tmp = $arr[2];
-      $arr[2] = $arr[1];
-      $arr[1] = $arr[0];
-      $arr[0] = $tmp;
+      $arr[2] = $arr[0];
+      $arr[0] = $arr[1];
+      $arr[1] = $tmp;
       return implode('/', $arr);
     } else {
       // MM/DD/YYYY
