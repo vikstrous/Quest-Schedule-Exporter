@@ -343,6 +343,20 @@ function _uw_build_time_string($time, $ampm){
 }
 
 ?>
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Quest Schedule Exporter</title>
+  <meta name="description" content="Quest Schedule Exporter. Quest -> ICS">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+</head>
+<body>
 <style type="text/css">
   label { cursor:pointer; }
   .hint { color:#666666; margin-top:10px; }
@@ -395,3 +409,6 @@ function _uw_build_time_string($time, $ampm){
 <div class="footer">
 Made by <a href="http://viktorstanchev.com"/>Viktor Stanchev</a>. See <a href="http://wattools.com"/>more tools</a>!
 </div>
+
+</body>
+</html>
