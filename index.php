@@ -355,6 +355,7 @@ function _uw_build_time_string($time, $ampm){
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css">
   <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
 <style type="text/css">
@@ -406,6 +407,59 @@ function _uw_build_time_string($time, $ampm){
   </div>
   </form>
 </div>
+
+<!-- Oh god, I'm a bad person for this. -->
+<script type="text/javascript">
+$(document).ready(function() {
+
+  var fields = {
+    summary: {
+      form: $('.form .summary'),
+      example: $('.example-summary')
+    },
+    description: {
+      form: $('.form .description'),
+      example: $('.example-description')
+    }
+  };
+
+  var examples = {
+    '@code': 'TRAIN 101',
+    '@section': '001',
+    '@name': 'Train Scheduling',
+    '@type': 'TST',
+    '@location': 'PAC 123',
+    '@prof': 'Mr. Conductor'
+  };
+
+  function cleanup(input) {
+    for (var name in examples) {
+      input = input.replace(name, examples[name])
+    }
+    return input;
+  }
+
+  fields.summary.form.on('change input paste', function() {
+    fields.summary.example.text(cleanup(fields.summary.form.val()))
+  });
+  fields.description.form.on('change input paste', function() {
+    fields.description.example.text(cleanup(fields.description.form.val()))
+  });
+  fields.summary.example.text(cleanup(fields.summary.form.val()))
+  fields.description.example.text(cleanup(fields.description.form.val()))
+});
+</script>
+
+Example:
+<div class="example">
+  <div>
+    Summary: <span class="example-summary"></span>
+  </div>
+  <div>
+    Description: <span class="example-description"></span>
+  </div>
+</div>
+
 <div class="footer">
 Made by <a href="http://viktorstanchev.com"/>Viktor Stanchev</a>. See <a href="http://wattools.com"/>more tools</a>!
 </div>
