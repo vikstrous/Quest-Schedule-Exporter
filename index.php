@@ -1,18 +1,18 @@
 <?php
 /**
  * Quest Schedule Exporter
- * 
+ *
  * Takes your quest schedule and gives you an iCalendar file!
- * 
+ *
  * by Viktor Stanchev
- * 
+ *
  * This code is chaos and crap. Just a hack... just a hack...
  * Why did I use "_uw_StripExtraSpace" instead of just string replace? This file is 300 lines too long.
- * 
+ *
  * Quest does this crazy thing where for some people it's in 24 hour format with the month and day switched in the
  * date field... Don't know why, but I search for AM or PM to determine if it's 12 hour time with mm/dd/yyyy or
  * 24 hour time with dd/mm/yyyy
- * 
+ *
  * todo:
  *  - formatting
  *  - rename functions
@@ -76,11 +76,11 @@ function normalize_date($time_string, $swap){
 
 //This will parse the waterloo schedule
 function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in @location', $description = '@code-@section: @name (@type) in @location with @prof') {
-  
+
   //icalendar day formats
   $arr_days = array('m'=>'MO', 't'=>'TU', 'w'=>'WE', 'h'=>'TH', 'f'=>'FR', 's'=>'SA', 'u'=>'SU');
   $arr_num_days = array('m'=>1, 't'=>2, 'w'=>3, 'h'=>4, 'f'=>5, 's'=>6, 'u'=>7);
-        
+
   //info that Quest gives us and schedule field it's useful for
   $code='';
   $name='';
@@ -93,16 +93,16 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
   $prof='';
   $date_start='';
   $date_end='';
-  
+
   //the result of this madness will be stored here
   $ical_array=array();
   $js_array=array();
-  
+
   //start at the beginning of the string
   $pos=0;
   //this is how long our quest schedule is
   $total_length=strlen($input);
-    
+
   //detect whether MM and DD needs to be swapped according to locale
   //if en-CA, swap
   //otherwise, no swap
@@ -115,21 +115,21 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
   while ( $pos < $total_length && $pos >= 0) {
     //assume we didn't find anything
     $found_what_we_need=false;
-    
+
     //the regex will match 1 of 3 completely different things - title, body, or partial body
     //we have to process what we get in order
-    
+
     //detect if it's 24h time or 12h time!
     $ampm = false;
     if(preg_match('/(AM)|(PM)/', $input)){
       $ampm = true;
     }
-       
+
     $time = $ampm ?
-       '([1]{0,1}\d\:[0-5]\d[AP]M)\ -\ 
+       '([1]{0,1}\d\:[0-5]\d[AP]M)\ -\
         ([1]{0,1}\d\:[0-5]\d[AP]M)\s+'
       :'(\d{2}\:\d{2})\ -\ (\d{2}\:\d{2})\s+';
-    
+
     $regex = '/
     (
       (\w{2,5}\ \w{3,4})\ -\                        #code
@@ -144,7 +144,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?|TBA)\s+           #room
       ([\w\ \-\,\r\n]+)\s+                          #instructor
-      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
+      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\
       (\d{2,4}\/\d{2,4}\/\d{2,4})
     )
     |
@@ -153,23 +153,23 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       '.$time.'
       ([\w\ ]+\s+[0-9]{1,5}[A-Z]?|TBA)\s+
       ([\w\ \-\,\r\n]+)\s+
-      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\ 
+      (\d{2,4}\/\d{2,4}\/\d{2,4})\ -\
       (\d{2,4}\/\d{2,4}\/\d{2,4})
     )/x';
-    
-    
+
+
     if(preg_match($regex, $input, $matches, PREG_OFFSET_CAPTURE, $pos)){
       //check what we found by seeing where the regex stopped
-      
+
       $number=count($matches);
       switch($number){
         //found title
         case 4:
-          
+
           //get the strings and put them in the variables
           $code=$matches[2][0];
           $name=trim($matches[3][0]);
-          
+
           //reset the rest of the variables so if something goes wrong, the error doesn't perpetuate
           $section='';
           $type='';
@@ -177,13 +177,13 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $time='';
           $location='';
           $prof='';
-          
+
           break;
-          
+
         //found body
         case 14:
           $found_what_we_need=true;
-          
+
           $section    = $matches[5][0];
           $type       = $matches[6][0];
           $days       = strtolower(str_replace('Th','h',$matches[7][0]));
@@ -194,13 +194,13 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $prof       = trim($matches[11][0]);
           $date_start = strtotime(normalize_date($matches[12][0], $swap));
           $date_end   = strtotime(normalize_date($matches[13][0], $swap));
-          
+
           break;
-          
+
         //found partial body
         case 22:
           $found_what_we_need=true;
-          
+
           $days       = strtolower(str_replace('Th','h',$matches[15][0]));
           $time_start = _uw_build_time_string($matches[16][0], $ampm);
           $time_end   = _uw_build_time_string($matches[17][0], $ampm);
@@ -209,17 +209,17 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $prof       = trim($matches[19][0]);
           $date_start = strtotime(normalize_date($matches[20][0], $swap));
           $date_end   = strtotime(normalize_date($matches[21][0], $swap));
-          
+
           break;
       }
-      
+
       //move to the end of what was matched and continue
       $pos=$matches[0][1]+strlen($matches[0][0]);
     } else $pos=-1; //this exits the while because we are done if we can't find anything we're looking for
-    
+
     //add to the array if we have all the info.
     if($found_what_we_need && $days != ''){
-      
+
       if($format == 'icalendar'){
         //format the days of the week
         $formatted_days = '';
@@ -229,12 +229,12 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
           $number_days[] = $arr_num_days[$day];
         }
         $formatted_days = substr($formatted_days,1);
-        
+
         //move the start date to the first valid day of the week
         while(!in_array(date('N',$date_start), $number_days)){
           $date_start = strtotime('+1 day', $date_start);
         }
-        
+
         //build the result
         $string_data = array(
           '@code' => $code,
@@ -260,7 +260,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
         //see rfc2445 section 4.1
         $result['description'] = str_replace("\r\n", "\r\n ", str_replace(',', '\,', $result['description']));
         $result['summary'] = str_replace("\r\n", "\r\n ", str_replace(',', '\,', $result['summary']));
-        
+
         //add this class to the list
         $ical_array[] = $result;
       } elseif ($format == 'js'){
@@ -282,7 +282,7 @@ function uw_waterloo_quest_schedule($input, $format, $summary = '@code @type in 
       }
     }
   }
-  
+
   if($format == 'icalendar'){
     $result_str = '';
     foreach($ical_array as $class){
@@ -343,6 +343,21 @@ function _uw_build_time_string($time, $ampm){
 }
 
 ?>
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Quest Schedule Exporter</title>
+  <meta name="description" content="Quest Schedule Exporter. Quest -> ICS">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
 <style type="text/css">
   label { cursor:pointer; }
   .hint { color:#666666; margin-top:10px; }
@@ -392,6 +407,62 @@ function _uw_build_time_string($time, $ampm){
   </div>
   </form>
 </div>
+
+<!-- Oh god, I'm a bad person for this. -->
+<script type="text/javascript">
+$(document).ready(function() {
+
+  var fields = {
+    summary: {
+      form: $('.form .summary'),
+      example: $('.example-summary')
+    },
+    description: {
+      form: $('.form .description'),
+      example: $('.example-description')
+    }
+  };
+
+  var examples = {
+    '@code': 'TRAIN 101',
+    '@section': '001',
+    '@name': 'Train Scheduling',
+    '@type': 'TST',
+    '@location': 'PAC 123',
+    '@prof': 'Mr. Conductor'
+  };
+
+  function cleanup(input) {
+    for (var name in examples) {
+      input = input.replace(name, examples[name])
+    }
+    return input;
+  }
+
+  fields.summary.form.on('change input paste', function() {
+    fields.summary.example.text(cleanup(fields.summary.form.val()))
+  });
+  fields.description.form.on('change input paste', function() {
+    fields.description.example.text(cleanup(fields.description.form.val()))
+  });
+  fields.summary.example.text(cleanup(fields.summary.form.val()))
+  fields.description.example.text(cleanup(fields.description.form.val()))
+});
+</script>
+
+Example:
+<div class="example">
+  <div>
+    Summary: <span class="example-summary"></span>
+  </div>
+  <div>
+    Description: <span class="example-description"></span>
+  </div>
+</div>
+
 <div class="footer">
 Made by <a href="http://viktorstanchev.com"/>Viktor Stanchev</a>. See <a href="http://wattools.com"/>more tools</a>!
 </div>
+
+</body>
+</html>
